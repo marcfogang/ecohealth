@@ -8,14 +8,32 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // Navigation vers l'écran de login
-            context.go('/login');
-          },
-          child: const Text('Aller dans Login'),
-        ),
+      body: Stack(
+        children: [
+          // Contenu centré
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo
+                Image.asset('logo.jpg', height: 100),
+                const SizedBox(height: 50),
+                // Bouton stylisé
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigation vers l'écran de login
+                    context.go('/login');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 18),
+                  ),
+                  child: const Text('Aller dans Login'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
