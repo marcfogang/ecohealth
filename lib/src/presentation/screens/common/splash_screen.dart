@@ -14,7 +14,7 @@ class SplashScreen extends StatelessWidget {
             // Navigation vers l'écran de login
             context.go('/login');
           },
-          child: const Text('Aller au Login'),
+          child: const Text('Aller dans Login'),
         ),
       ),
     );
