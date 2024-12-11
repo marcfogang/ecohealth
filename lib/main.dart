@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import du provider
 import 'src/utils/routing/app_router.dart';
 import 'src/utils/theme/app_theme.dart';
-import 'src/data/local/local_storage.dart'; // Import pour accéder à l'init Hive
+import 'src/data/local/local_storage.dart';
+import 'src/data/services/auth_service.dart';
+import 'src/data/repositories/auth_repository.dart';
+import 'src/presentation/state/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialisation Hive via LocalStorage
-  await LocalStorage.initHive(); // Appel de la méthode d'init depuis local_storage.dart
+  await LocalStorage.initHive();
 
-  runApp(const MyApp());
+  // Instanciation du AuthService et du AuthRepository
+  final authService = AuthService();
+  final authRepository = AuthRepository(authService: authService);
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(authRepository: authRepository),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
