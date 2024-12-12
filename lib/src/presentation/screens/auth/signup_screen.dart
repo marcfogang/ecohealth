@@ -40,41 +40,47 @@ class _SignupScreenState extends State<SignupScreen> {
               obscureText: true,
             ),
             const SizedBox(height: 16),
-            if (_errorMessage != null)
+            if (_errorMessage != null) 
               Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
-            _isLoading
-                ? const CircularProgressIndicator()
+            _isLoading 
+                ? const CircularProgressIndicator() 
                 : ElevatedButton(
-              onPressed: () async {
-                setState(() {
-                  _isLoading = true;
-                  _errorMessage = null;
-                });
-                final email = emailController.text.trim();
-                final password = passwordController.text.trim();
+                    onPressed: () async {
+                      setState(() {
+                        _isLoading = true;
+                        _errorMessage = null;
+                      });
 
-                final success = await authProvider.signup(email, password);
+                      final email = emailController.text.trim();
+                      final password = passwordController.text.trim();
 
-                setState(() {
-                  _isLoading = false;
-                });
+                      final success = await authProvider.signup(email, password);
 
-                if (success) {
-                  // Une fois inscrit, on redirige l'utilisateur
-                  context.go('/patient_home');
-                } else {
-                  setState(() {
-                    _errorMessage = "Impossible de s'inscrire. Vérifiez vos informations.";
-                  });
-                }
-              },
-              child: const Text("S'inscrire"),
-            ),
+                      setState(() {
+                        _isLoading = false;
+                      });
+
+                      if (success) {
+                        // Redirection basée sur le rôle factice attribué après signup
+                        if (authProvider.role == 'doctor') {
+                          context.go('/doctor_home');
+                        } else if (authProvider.role == 'patient') {
+                          context.go('/patient_home');
+                        } else {
+                          context.go('/aidant_home');
+                        }
+                      } else {
+                        setState(() {
+                          _errorMessage = "Impossible de s'inscrire. Vérifiez vos informations.";
+                        });
+                      }
+                    },
+                    child: const Text("S'inscrire"),
+                  ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: () {
-                // Retour à l'écran de login
                 context.go('/login');
               },
               child: const Text("Déjà un compte ? Se connecter"),

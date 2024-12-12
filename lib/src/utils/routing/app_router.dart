@@ -1,13 +1,15 @@
+// lib/src/utils/routing/app_router.dart
+
 import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
 
 import '../../presentation/screens/common/splash_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
+import '../../presentation/screens/auth/signup_screen.dart';
 import '../../presentation/screens/patient/patient_home_screen.dart';
 import '../../presentation/screens/doctor/doctor_home_screen.dart';
 import '../../presentation/screens/aidant/aidant_home_screen.dart';
 
-// Vous pourrez plus tard conditionner la redirection en fonction du rôle
-// Pour l'instant, mettons des routes simples.
 final appRouter = GoRouter(
   routes: [
     GoRoute(
@@ -19,6 +21,11 @@ final appRouter = GoRouter(
       path: '/login',
       name: 'login',
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/signup',
+      name: 'signup',
+      builder: (context, state) => const SignupScreen(),
     ),
     GoRoute(
       path: '/patient_home',

@@ -40,42 +40,47 @@ class _LoginScreenState extends State<LoginScreen> {
               obscureText: true,
             ),
             const SizedBox(height: 16),
-            if (_errorMessage != null)
+            if (_errorMessage != null) 
               Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
-            _isLoading
-                ? const CircularProgressIndicator()
+            _isLoading 
+                ? const CircularProgressIndicator() 
                 : ElevatedButton(
-              onPressed: () async {
-                setState(() {
-                  _isLoading = true;
-                  _errorMessage = null;
-                });
-                final email = emailController.text.trim();
-                final password = passwordController.text.trim();
+                    onPressed: () async {
+                      setState(() {
+                        _isLoading = true;
+                        _errorMessage = null;
+                      });
 
-                final success = await authProvider.login(email, password);
+                      final email = emailController.text.trim();
+                      final password = passwordController.text.trim();
 
-                setState(() {
-                  _isLoading = false;
-                });
+                      final success = await authProvider.login(email, password);
 
-                if (success) {
-                  // Redirection après connexion
-                  // Remplacez '/patient_home' par la route adaptée à votre rôle
-                  context.go('/patient_home');
-                } else {
-                  setState(() {
-                    _errorMessage = 'Impossible de se connecter. Vérifiez vos identifiants.';
-                  });
-                }
-              },
-              child: const Text('Se connecter'),
-            ),
+                      setState(() {
+                        _isLoading = false;
+                      });
+
+                      if (success) {
+                        // Redirection basée sur le rôle factice
+                        if (authProvider.role == 'doctor') {
+                          context.go('/doctor_home');
+                        } else if (authProvider.role == 'patient') {
+                          context.go('/patient_home');
+                        } else {
+                          context.go('/aidant_home');
+                        }
+                      } else {
+                        setState(() {
+                          _errorMessage = 'Impossible de se connecter. Vérifiez vos identifiants.';
+                        });
+                      }
+                    },
+                    child: const Text('Se connecter'),
+                  ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: () {
-                // Naviguer vers l'écran de signup
                 context.go('/signup');
               },
               child: const Text("Pas de compte ? S'inscrire"),

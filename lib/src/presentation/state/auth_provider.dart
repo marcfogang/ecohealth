@@ -4,56 +4,61 @@ import '../../data/repositories/auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthRepository authRepository;
-
+  
   bool _isAuthenticated = false;
   bool get isAuthenticated => _isAuthenticated;
+
+  String? _role; 
+  String? get role => _role;
 
   AuthProvider({required this.authRepository}) {
     _checkAuthStatus();
   }
 
-  /// Vérifie si un token est présent au démarrage de l’app.
   Future<void> _checkAuthStatus() async {
     final token = await authRepository.getToken();
     _isAuthenticated = token != null;
+    // Si on veut simuler un rôle même lorsqu'on est déjà authentifié
+    // (par exemple si l’utilisateur avait déjà un token), on peut mettre un rôle par défaut :
+    // _role = _isAuthenticated ? 'patient' : null;
     notifyListeners();
   }
 
-  /// Tente de se connecter avec email/password.
-  /// Retourne true si succès, false sinon.
   Future<bool> login(String email, String password) async {
     final success = await authRepository.login(email, password);
     if (success) {
       _isAuthenticated = true;
+      // On assigne un rôle factice, en attendant le backend
+      // Par exemple, on décide arbitrairement que tous les logins actuels sont des "patients"
+      _role = 'doctor';
       notifyListeners();
     }
     return success;
   }
 
-  /// Tente de s’inscrire.
-  /// Retourne true si succès, false sinon.
   Future<bool> signup(String email, String password) async {
     final success = await authRepository.signup(email, password);
     if (success) {
       _isAuthenticated = true;
+      // On assigne un rôle factice après un signup
+      // Par exemple, on décide arbitrairement que les nouveaux inscrits sont des "aidants"
+      _role = 'aidant';
       notifyListeners();
     }
     return success;
   }
 
-  /// Déconnecte l’utilisateur.
   Future<void> logout() async {
     await authRepository.logout();
     _isAuthenticated = false;
+    _role = null; // On réinitialise le rôle à null
     notifyListeners();
   }
 
-  /// Tente de rafraîchir le token (optionnel, si nécessaire).
-  /// Peut être appelé lorsqu’on obtient un 401 (non géré ici, mais dans l’intercepteur).
   Future<bool> refresh() async {
     final refreshed = await authRepository.refreshToken();
     if (!refreshed) {
-      // Si le refresh échoue, on déconnecte l’utilisateur.
+      // Si le refresh échoue, on déconnecte l’utilisateur et on perd son rôle
       await logout();
     }
     return refreshed;
