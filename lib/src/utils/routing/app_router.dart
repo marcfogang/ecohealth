@@ -1,5 +1,6 @@
 // lib/src/utils/routing/app_router.dart
 
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../presentation/screens/common/splash_screen.dart';
@@ -8,6 +9,7 @@ import '../../presentation/screens/auth/signup_screen.dart';
 import '../../presentation/screens/patient/patient_home_screen.dart';
 import '../../presentation/screens/doctor/doctor_home_screen.dart';
 import '../../presentation/screens/aidant/aidant_home_screen.dart';
+import '../../presentation/screens/doctor/doctor_scan_prescription_screen.dart'; // Import du nouvel écran
 
 final appRouter = GoRouter(
   routes: [
@@ -40,6 +42,12 @@ final appRouter = GoRouter(
       path: '/aidant_home',
       name: 'aidant_home',
       builder: (context, state) => const AidantHomeScreen(),
+    ),
+    // Nouvelle route pour le scan ordonnance
+    GoRoute(
+      path: '/doctor_scan_prescription',
+      name: 'doctor_scan_prescription',
+      builder: (context, state) => const DoctorScanPrescriptionScreen(),
     ),
   ],
   initialLocation: '/',

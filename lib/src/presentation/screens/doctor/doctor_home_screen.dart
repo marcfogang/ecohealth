@@ -26,8 +26,19 @@ class DoctorHomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
-        child: Text("Bienvenue Docteur"),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                context.go('/doctor_scan_prescription');
+              },
+              child: const Text("Scanner une Ordonnance"),
+            ),
+            // Vous pourrez ajouter plus tard d’autres boutons (Historique, Aidants, Rendez-vous)
+          ],
+        ),
       ),
     );
   }
