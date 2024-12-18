@@ -9,9 +9,15 @@ import 'src/data/services/auth_service.dart';
 import 'src/data/repositories/auth_repository.dart';
 import 'src/presentation/state/auth_provider.dart';
 
-// Ajouts :
+// Import des nouveaux services et repositories
 import 'src/data/services/prescription_service.dart';
 import 'src/data/repositories/prescription_repository.dart';
+
+import 'src/data/services/aidant_service.dart';
+import 'src/data/repositories/aidant_repository.dart';
+
+import 'src/data/services/appointment_service.dart';
+import 'src/data/repositories/appointment_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,15 +27,22 @@ void main() async {
   final authService = AuthService();
   final authRepository = AuthRepository(authService: authService);
 
-  // Création du PrescriptionService et PrescriptionRepository
   final prescriptionService = PrescriptionService();
   final prescriptionRepository = PrescriptionRepository(prescriptionService: prescriptionService);
+
+  final aidantService = AidantService();
+  final aidantRepository = AidantRepository(aidantService: aidantService);
+
+  final appointmentService = AppointmentService();
+  final appointmentRepository = AppointmentRepository(appointmentService: appointmentService);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider(authRepository: authRepository)),
-        Provider(create: (_) => prescriptionRepository), // Fournir le prescriptionRepository
+        Provider(create: (_) => prescriptionRepository),
+        Provider(create: (_) => aidantRepository),
+        Provider(create: (_) => appointmentRepository),
       ],
       child: const MyApp(),
     ),

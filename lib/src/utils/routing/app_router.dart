@@ -8,7 +8,10 @@ import '../../presentation/screens/auth/signup_screen.dart';
 import '../../presentation/screens/patient/patient_home_screen.dart';
 import '../../presentation/screens/doctor/doctor_home_screen.dart';
 import '../../presentation/screens/aidant/aidant_home_screen.dart';
-import '../../presentation/screens/doctor/doctor_scan_prescription_screen.dart'; // Import du nouvel écran
+import '../../presentation/screens/doctor/doctor_scan_prescription_screen.dart';
+import '../../presentation/screens/doctor/doctor_prescription_history_screen.dart';
+import '../../presentation/screens/doctor/doctor_manage_aidants_screen.dart';
+import '../../presentation/screens/doctor/doctor_appointments_screen.dart';
 
 final appRouter = GoRouter(
   routes: [
@@ -42,11 +45,25 @@ final appRouter = GoRouter(
       name: 'aidant_home',
       builder: (context, state) => const AidantHomeScreen(),
     ),
-    // Nouvelle route pour le scan ordonnance
     GoRoute(
       path: '/doctor_scan_prescription',
       name: 'doctor_scan_prescription',
       builder: (context, state) => const DoctorScanPrescriptionScreen(),
+    ),
+    GoRoute(
+      path: '/doctor_prescription_history',
+      name: 'doctor_prescription_history',
+      builder: (context, state) => const DoctorPrescriptionHistoryScreen(),
+    ),
+    GoRoute(
+      path: '/doctor_manage_aidants',
+      name: 'doctor_manage_aidants',
+      builder: (context, state) => const DoctorManageAidantsScreen(),
+    ),
+    GoRoute(
+      path: '/doctor_appointments',
+      name: 'doctor_appointments',
+      builder: (context, state) => const DoctorAppointmentsScreen(),
     ),
   ],
   initialLocation: '/',
