@@ -1,3 +1,19 @@
+// Fichier : android/build.gradle
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Version de l’Android Gradle Plugin (AGP)
+        classpath "com.android.tools.build:gradle:8.3.0"
+
+        // Plugin Kotlin (optionnel, si vous en avez besoin dans le projet)
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.22"
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -5,14 +21,32 @@ allprojects {
     }
 }
 
+// Centralise le dossier de build à la racine du projet
 rootProject.buildDir = "../build"
+
+// Configure le dossier build pour chaque sous-projet
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// Tâche 'clean' pour nettoyer les builds
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
+}
+
+// (Optionnel) Ajout automatique d’un namespace si le plugin n’en a pas défini.
+// Utile si un plugin Flutter tiers ne possède pas de namespace dans son build.gradle.
+gradle.projectsEvaluated {
+    subprojects { subproject ->
+        if (subproject.plugins.hasPlugin('com.android.library')
+                || subproject.plugins.hasPlugin('com.android.application')) {
+            def androidExtension = subproject.extensions.findByName('android')
+            if (androidExtension != null && !androidExtension.hasProperty('namespace')) {
+                // Ajustez le namespace par défaut si vous le souhaitez :
+                androidExtension.namespace = "com.example.${subproject.name}"
+                println "Namespace ajouté pour le module ${subproject.name}: com.example.${subproject.name}"
+            }
+        }
+    }
 }
