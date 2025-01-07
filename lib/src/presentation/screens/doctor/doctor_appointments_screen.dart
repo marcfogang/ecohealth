@@ -26,21 +26,24 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
     _loadAppointments();
   }
 
+  /// On charge la liste de RDV côté docteur
   Future<void> _loadAppointments() async {
     final appointmentRepository = context.read<AppointmentRepository>();
     setState(() => _isLoading = true);
-    _appointments = await appointmentRepository.loadAppointments("doctor123");
+
+    // ⚠️ ICI on utilise loadAppointmentsDoctor
+    _appointments = await appointmentRepository.loadAppointmentsDoctor("doctor123");
+
     setState(() => _isLoading = false);
   }
 
+  /// Choisir la date via un datePicker
   Future<void> _chooseDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now().add(const Duration(days: 1)),
       firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime
-          .now()
-          .year + 1),
+      lastDate: DateTime(DateTime.now().year + 1),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -49,10 +52,9 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
     }
   }
 
+  /// Ajouter RDV côté docteur
   Future<void> _addAppointment() async {
-    if (_selectedDate == null || _patientIdController.text
-        .trim()
-        .isEmpty) {
+    if (_selectedDate == null || _patientIdController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text("Veuillez saisir un patientId et choisir une date.")),
@@ -61,15 +63,18 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
     }
     final appointmentRepository = context.read<AppointmentRepository>();
     final dateStr = DateFormat('yyyy-MM-dd HH:mm').format(_selectedDate!);
-    final success = await appointmentRepository.addAppointment(
+
+    // ⚠️ ICI on utilise addAppointmentDoctor
+    final success = await appointmentRepository.addAppointmentDoctor(
       "doctor123",
       _patientIdController.text.trim(),
       dateStr,
     );
+
     if (success) {
       _patientIdController.clear();
       _selectedDate = null;
-      await _loadAppointments();
+      await _loadAppointments(); // Rafraîchir la liste
     }
   }
 
@@ -119,8 +124,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
               itemBuilder: (context, index) {
                 final appt = _appointments[index];
                 return ListTile(
-                  title: Text(
-                      "RDV ${appt['id']} avec patient ${appt['patientId']}"),
+                  title: Text("RDV ${appt['id']} avec patient ${appt['patientId']}"),
                   subtitle: Text("Date: ${appt['date']}"),
                 );
               },

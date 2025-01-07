@@ -19,7 +19,6 @@ class PatientHomeScreen extends StatelessWidget {
           IconButton(
             onPressed: () async {
               await authProvider.logout();
-              // Après déconnexion, on retourne sur l’écran de login
               context.go('/login');
             },
             icon: const Icon(Icons.logout),
@@ -27,8 +26,59 @@ class PatientHomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      drawer: _buildPatientDrawer(context),
       body: const Center(
         child: Text("Bienvenue dans l'espace patient"),
+      ),
+    );
+  }
+
+  /// Drawer permettant de naviguer vers les écrans Patient
+  Drawer _buildPatientDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          const DrawerHeader(
+            decoration: BoxDecoration(color: Colors.blue),
+            child: Text(
+              'Menu Patient',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.receipt_long),
+            title: const Text('Mes Prescriptions'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/patient_prescriptions');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.calendar_month),
+            title: const Text('Mes Rendez-vous'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/patient_appointments');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.medical_services),
+            title: const Text('Mon Stock'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/patient_stock');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.alarm),
+            title: const Text('Mes Rappels'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/patient_reminders');
+            },
+          ),
+        ],
       ),
     );
   }
