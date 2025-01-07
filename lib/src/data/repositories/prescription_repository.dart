@@ -7,19 +7,48 @@ class PrescriptionRepository {
   final PrescriptionService prescriptionService;
   final Box prescriptionBox;
 
-  PrescriptionRepository({required this.prescriptionService, required this.prescriptionBox});
+  PrescriptionRepository({
+    required this.prescriptionService,
+    required this.prescriptionBox,
+  });
 
-  Future<List<Map<String, dynamic>>> loadPrescriptionHistory(String patientId, {int lastMonths = 6}) async {
-    final prescriptions = await prescriptionService.fetchPrescriptions(patientId);
-    final cutoffDate = DateTime.now().subtract(Duration(days: lastMonths * 30));
-    return prescriptions.where((p) {
-      final createdAt = DateTime.tryParse(p['scannedAt'] ?? p['createdAt'] ?? '');
-      if (createdAt == null) return false;
-      return createdAt.isAfter(cutoffDate);
-    }).toList();
+  Future<void> deletePrescription(int id) async {
+    try {
+      await prescriptionBox.delete(id);
+      print("Prescription supprimée avec succès: ID $id");
+    } catch (e) {
+      print("Erreur lors de la suppression de la prescription: $e");
+    }
+  }
+  Future<bool> addPrescription(String patientId, Map<String, dynamic> prescriptionData) async {
+    try {
+      // 🔄 Génération d'un ID incrémental
+      final lastId = prescriptionBox.isEmpty ? 0 : prescriptionBox.keys.cast<int>().reduce((a, b) => a > b ? a : b);
+      final newId = lastId + 1;
+
+      prescriptionData['id'] = newId; // ID Incrémental
+      prescriptionData['patientId'] = patientId;
+      prescriptionData['createdAt'] = DateTime.now().toIso8601String();
+
+      await prescriptionBox.put(newId, prescriptionData);
+      return true;
+    } catch (e) {
+      print("Erreur lors de l'ajout de la prescription: $e");
+      return false;
+    }
   }
 
-  Future<bool> addPrescription(String patientId, Map<String, dynamic> prescriptionData) async {
-    return await prescriptionService.createPrescription(prescriptionData);
+  Future<List<Map<String, dynamic>>> loadPrescriptionHistory(String patientId) async {
+    try {
+      final prescriptions = prescriptionBox.values
+          .where((p) => p['patientId'] == patientId)
+          .cast<Map<String, dynamic>>()
+          .toList();
+      return prescriptions;
+    } catch (e) {
+      print("Erreur lors du chargement de l'historique des prescriptions: $e");
+      return [];
+    }
   }
 }
+

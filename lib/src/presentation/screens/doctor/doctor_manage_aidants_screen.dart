@@ -108,6 +108,14 @@ class _DoctorManageAidantsScreenState extends State<DoctorManageAidantsScreen> {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.note_add),
+            title: const Text('Ajouter une Prescription'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/doctor_add_prescription?ocrText=');
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.history),
             title: const Text('Historique des Prescriptions'),
             onTap: () {

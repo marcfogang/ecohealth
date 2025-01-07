@@ -36,9 +36,11 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
   Future<void> _chooseDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days:1)),
+      initialDate: DateTime.now().add(const Duration(days: 1)),
       firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 1),
+      lastDate: DateTime(DateTime
+          .now()
+          .year + 1),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -48,9 +50,12 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
   }
 
   Future<void> _addAppointment() async {
-    if (_selectedDate == null || _patientIdController.text.trim().isEmpty) {
+    if (_selectedDate == null || _patientIdController.text
+        .trim()
+        .isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Veuillez saisir un patientId et choisir une date.")),
+        const SnackBar(
+            content: Text("Veuillez saisir un patientId et choisir une date.")),
       );
       return;
     }
@@ -78,50 +83,51 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _patientIdController,
-                        decoration: const InputDecoration(labelText: "Patient ID"),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: _chooseDate,
-                            child: const Text("Choisir la date"),
-                          ),
-                          const SizedBox(width: 10),
-                          _selectedDate == null
-                              ? const Text("Aucune date choisie")
-                              : Text(DateFormat('yyyy-MM-dd').format(_selectedDate!)),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: _addAppointment,
-                        child: const Text("Ajouter Rendez-vous"),
-                      ),
-                    ],
-                  ),
+                TextField(
+                  controller: _patientIdController,
+                  decoration: const InputDecoration(labelText: "Patient ID"),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _appointments.length,
-                    itemBuilder: (context, index) {
-                      final appt = _appointments[index];
-                      return ListTile(
-                        title: Text("RDV ${appt['id']} avec patient ${appt['patientId']}"),
-                        subtitle: Text("Date: ${appt['date']}"),
-                      );
-                    },
-                  ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: _chooseDate,
+                      child: const Text("Choisir la date"),
+                    ),
+                    const SizedBox(width: 10),
+                    _selectedDate == null
+                        ? const Text("Aucune date choisie")
+                        : Text(DateFormat('yyyy-MM-dd').format(_selectedDate!)),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: _addAppointment,
+                  child: const Text("Ajouter Rendez-vous"),
                 ),
               ],
             ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _appointments.length,
+              itemBuilder: (context, index) {
+                final appt = _appointments[index];
+                return ListTile(
+                  title: Text(
+                      "RDV ${appt['id']} avec patient ${appt['patientId']}"),
+                  subtitle: Text("Date: ${appt['date']}"),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -132,7 +138,8 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(color: Colors.blue),
-            child: Text('Menu Médecin', style: TextStyle(color: Colors.white, fontSize: 20)),
+            child: Text('Menu Médecin',
+                style: TextStyle(color: Colors.white, fontSize: 20)),
           ),
           ListTile(
             leading: const Icon(Icons.document_scanner),
@@ -140,6 +147,14 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> {
             onTap: () {
               Navigator.pop(context);
               context.go('/doctor_scan_prescription');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.note_add),
+            title: const Text('Ajouter une Prescription'),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/doctor_add_prescription?ocrText=');
             },
           ),
           ListTile(

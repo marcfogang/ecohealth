@@ -46,6 +46,15 @@ class DoctorHomeScreen extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.note_add),
+            title: const Text('Ajouter une Prescription'),
+            onTap: () {
+              Navigator.pop(context);
+              // On met un ocrText vide
+              context.go('/doctor_add_prescription?ocrText=');
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.history),
             title: const Text('Historique des Prescriptions'),
             onTap: () {

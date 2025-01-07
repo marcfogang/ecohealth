@@ -1,0 +1,14 @@
+{
+  "files": [
+    "eng.traineddata",
+    "fra.traineddata"
+  ],
+  "psm": 3,
+  "oem": 1,
+  "preserve_interword_spaces": "1",
+  "tessedit_char_whitelist": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:!?'\"()[]{}<>|\\/@#$%^&*-_+=~` ",
+  "tessedit_char_blacklist": "",
+  "user_patterns_suffix": "",
+  "user_words_suffix": ""
+}
+
