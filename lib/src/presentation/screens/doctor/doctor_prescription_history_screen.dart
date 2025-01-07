@@ -3,8 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../state/auth_provider.dart';
 import '../../../data/repositories/prescription_repository.dart';
+import '../../../data/services/medication_api_service.dart';
+import '../../../data/models/medication_details_15.dart';
 
 class DoctorPrescriptionHistoryScreen extends StatefulWidget {
   const DoctorPrescriptionHistoryScreen({super.key});
@@ -16,7 +19,7 @@ class DoctorPrescriptionHistoryScreen extends StatefulWidget {
 
 class _DoctorPrescriptionHistoryScreenState
     extends State<DoctorPrescriptionHistoryScreen> {
-  final Set<int> _selectedPrescriptions = {}; // Pour stocker les IDs sélectionnés
+  final Set<int> _selectedPrescriptions = {};
   bool _isDeleting = false;
 
   void _toggleSelection(int id) {
@@ -33,10 +36,7 @@ class _DoctorPrescriptionHistoryScreenState
     if (_selectedPrescriptions.isEmpty) return;
 
     final prescriptionRepository = context.read<PrescriptionRepository>();
-
-    setState(() {
-      _isDeleting = true;
-    });
+    setState(() => _isDeleting = true);
 
     for (var id in _selectedPrescriptions) {
       await prescriptionRepository.deletePrescription(id);
@@ -46,24 +46,22 @@ class _DoctorPrescriptionHistoryScreenState
       _isDeleting = false;
       _selectedPrescriptions.clear();
     });
-
-    // Rafraîchir l'écran
     setState(() {});
   }
 
-  void _showPrescriptionDetails(BuildContext context, Map<String, dynamic> prescription) {
+  /// Popup basique
+  void _showBasicDetails(Map<String, dynamic> p) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Détails de la Prescription #${prescription['id']}'),
+        title: Text('Prescription #${p['id']}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('🩺 **Médicament:** ${prescription['medications'][0]['name']}'),
-            Text('💊 **Dosage:** ${prescription['medications'][0]['dosage']}'),
-            Text('⏳ **Durée:** ${prescription['medications'][0]['duration']}'),
-            Text('📅 **Date:** ${prescription['createdAt']}'),
+            Text('💊 Médicament: ${p['medications'][0]['name']}'),
+            Text('💉 Dosage: ${p['medications'][0]['dosage']}'),
+            Text('📅 Durée: ${p['medications'][0]['duration']}'),
           ],
         ),
         actions: [
@@ -74,6 +72,68 @@ class _DoctorPrescriptionHistoryScreenState
         ],
       ),
     );
+  }
+
+  /// Va chercher les 15 champs
+  Future<void> _fetchAndShowAllDetails(String drugCode) async {
+    try {
+      final api = context.read<MedicationApiService>();
+      final details = await api.fetchMedicationDetails(drugCode);
+      _showFullMedicationDetails(details);
+    } catch (e) {
+      print("Erreur fetchMedicationDetails: $e");
+    }
+  }
+
+  /// Affiche la popup avec 15 champs
+  void _showFullMedicationDetails(MedicationDetails15 d) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("Infos complètes du Médicament #${d.codeMedicament}"),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("🐾 nom_espèce_vétérinaire : ${d.nomEspeceVeterinaire}"),
+              Text("⏳ date_d'expiration : ${d.dateExpiration}"),
+              Text("📅 historique_date : ${d.historiqueDate}"),
+              Text("🏥 nom_du_programme : ${d.nomDuProgramme}"),
+              Text("💉 nom_de_la_voie_administrative : ${d.nomDeLaVoieAdministrative}"),
+              Text("📦 type_de_paquet : ${d.typeDePaquet}"),
+              Text("📄 informations_sur_le_produit : ${d.informationsSurLeProduit}"),
+              Text("🔢 CUP : ${d.cup}"),
+              Text("💊 nom_forme_pharmaceutique : ${d.nomFormePharmaceutique}"),
+              Text("🏷️ nom_de_marque : ${d.nomDeMarque}"),
+              Text("🏷️ nom_de_classe : ${d.nomDeClasse}"),
+              Text("📝 descripteur : ${d.descripteur}"),
+              Text("💊 code_médicament : ${d.codeMedicament}"),
+              Text("🔢 numéro_d'identification_du_médicament : ${d.numeroIdentificationMedicament}"),
+              Text("🔢 nombre_de_ais : ${d.nombreDeAis}"),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Fermer"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Callback principal quand on clique sur la prescription
+  void _showPrescriptionDetails(Map<String, dynamic> prescription) {
+    // Si on a stocké un 'drug_code', on peut fetch l’API
+    final drugCode = prescription['drug_code'] as String?;
+    if (drugCode != null && drugCode.isNotEmpty) {
+      // On va chercher les 15 champs
+      _fetchAndShowAllDetails(drugCode);
+    } else {
+      // Sinon, on affiche juste la popup basique
+      _showBasicDetails(prescription);
+    }
   }
 
   @override
@@ -123,7 +183,7 @@ class _DoctorPrescriptionHistoryScreenState
                 title: Text("Prescription #${p['id']}"),
                 subtitle: Text("Date : ${p['createdAt']}"),
                 trailing: const Icon(Icons.info_outline),
-                onTap: () => _showPrescriptionDetails(context, p),
+                onTap: () => _showPrescriptionDetails(p),
               );
             },
           );
@@ -131,6 +191,7 @@ class _DoctorPrescriptionHistoryScreenState
       ),
     );
   }
+
 
   Drawer _buildDoctorDrawer(BuildContext context, AuthProvider authProvider) {
     return Drawer(

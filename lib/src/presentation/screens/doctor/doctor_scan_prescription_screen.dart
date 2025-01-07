@@ -23,20 +23,25 @@ class _DoctorScanPrescriptionScreenState
   String? _ocrError;
 
   // Méthodes de Parsing Automatique
+  /// Renvoie le nom du médicament (Médicament / Medicine)
   String _parseMedication(String text) {
     final regex = RegExp(r"(Médicament|Medicine):\s*(\w+)");
     final match = regex.firstMatch(text);
     return match?.group(2) ?? '';
   }
 
-  String _parseDosage(String text) {
-    final regex = RegExp(r"(Dosage|Dose):\s*([\w\s]+)");
+  /// Renvoie le nom de la voie administrative (ancien "dosage")
+  String _parseVoieAdmin(String text) {
+    // On suppose qu'il y a un tag "VoieAdmin" ou "Dose" ou "Dosage" :
+    final regex = RegExp(r"(VoieAdmin|Dosage|Dose):\s*([\w\s]+)");
     final match = regex.firstMatch(text);
     return match?.group(2) ?? '';
   }
 
-  String _parseDuration(String text) {
-    final regex = RegExp(r"(Durée|Duration):\s*([\w\s]+)");
+  /// Renvoie le nom de la forme pharmaceutique (ancien "durée")
+  String _parseFormePharma(String text) {
+    // On suppose qu'il y a un tag "FormePharma" ou "Durée|Duration" :
+    final regex = RegExp(r"(FormePharma|Durée|Duration):\s*([\w\s]+)");
     final match = regex.firstMatch(text);
     return match?.group(2) ?? '';
   }
@@ -63,8 +68,7 @@ class _DoctorScanPrescriptionScreenState
     setState(() => _isScanning = true);
 
     try {
-      print(
-          "[DEBUG OCR] => Début de l'extraction OCR avec la langue: $language");
+      print("[DEBUG OCR] => Début de l'extraction OCR avec la langue: $language");
 
       final text = await FlutterTesseractOcr.extractText(
         _selectedImage!.path,
@@ -84,33 +88,33 @@ class _DoctorScanPrescriptionScreenState
 
       // Parsing automatique
       final medication = _parseMedication(text);
-      final dosage = _parseDosage(text);
-      final duration = _parseDuration(text);
+      final voieAdmin = _parseVoieAdmin(text);
+      final formePharma = _parseFormePharma(text);
 
       print(
-          "[DEBUG OCR PARSE] => Médicament: $medication, Dosage: $dosage, Durée: $duration");
+          "[DEBUG OCR PARSE] => Médicament: $medication, VoieAdmin: $voieAdmin, FormePharma: $formePharma");
 
       setState(() => _isScanning = false);
 
-      if (medication.isEmpty && dosage.isEmpty && duration.isEmpty) {
-        // Si le parsing échoue, on va vers la vérification manuelle
+      // Si tout est vide, on va vers la vérification manuelle
+      if (medication.isEmpty && voieAdmin.isEmpty && formePharma.isEmpty) {
         context.go(
           '/doctor_review_ocr',
           extra: {
             'medication': '',
-            'dosage': '',
-            'duration': '',
+            'voieAdmin': '',
+            'formePharma': '',
             'rawText': text,
           },
         );
       } else {
-        // Si le parsing réussit, on va directement à l'ajout de prescription
+        // Sinon, on va directement à l'ajout de prescription
         context.go(
           '/doctor_add_prescription',
           extra: {
             'medication': medication,
-            'dosage': dosage,
-            'duration': duration,
+            'voieAdmin': voieAdmin,
+            'formePharma': formePharma,
           },
         );
       }
@@ -138,8 +142,7 @@ class _DoctorScanPrescriptionScreenState
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (_ocrError != null)
-                Text(_ocrError!,
-                    style: const TextStyle(color: Colors.red)),
+                Text(_ocrError!, style: const TextStyle(color: Colors.red)),
               ElevatedButton(
                 onPressed: () => _pickImage(ImageSource.gallery),
                 child: const Text("Importer depuis la Galerie"),
@@ -174,7 +177,7 @@ class _DoctorScanPrescriptionScreenState
     );
   }
 
-  /// ✅ **Drawer Complet du Médecin**
+  /// Drawer complet du Médecin
   Drawer _buildDoctorDrawer(BuildContext context, AuthProvider authProvider) {
     return Drawer(
       child: ListView(
@@ -182,7 +185,10 @@ class _DoctorScanPrescriptionScreenState
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(color: Colors.blue),
-            child: Text('Menu Médecin', style: TextStyle(color: Colors.white, fontSize: 20)),
+            child: Text(
+              'Menu Médecin',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.document_scanner),

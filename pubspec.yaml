@@ -42,7 +42,7 @@ dependencies:
   image_picker: ^1.1.2
   flutter_tesseract_ocr: ^0.4.26
   intl: ^0.17.0
-
+  debounce_throttle: ^2.0.0
 
 
   # The following adds the Cupertino Icons font to your application.

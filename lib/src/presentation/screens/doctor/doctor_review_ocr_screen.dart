@@ -4,16 +4,16 @@ import '../../state/auth_provider.dart';
 
 class DoctorReviewOCRScreen extends StatefulWidget {
   final String rawText;
-  final String medication;
-  final String dosage;
-  final String duration;
+  final String medication; // ex: "Nom du médicament"
+  final String voieAdmin;  // ancien "dosage"
+  final String formePharma; // ancien "duration"
 
   const DoctorReviewOCRScreen({
     super.key,
     required this.rawText,
     this.medication = '',
-    this.dosage = '',
-    this.duration = '',
+    this.voieAdmin = '',
+    this.formePharma = '',
   });
 
   @override
@@ -22,29 +22,30 @@ class DoctorReviewOCRScreen extends StatefulWidget {
 
 class _DoctorReviewOCRScreenState extends State<DoctorReviewOCRScreen> {
   final TextEditingController _medicationController = TextEditingController();
-  final TextEditingController _dosageController = TextEditingController();
-  final TextEditingController _durationController = TextEditingController();
+  final TextEditingController _voieAdminController = TextEditingController();
+  final TextEditingController _formePharmaController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    // Initialise les champs avec les valeurs passées en paramètre
     _medicationController.text = widget.medication;
-    _dosageController.text = widget.dosage;
-    _durationController.text = widget.duration;
+    _voieAdminController.text = widget.voieAdmin;
+    _formePharmaController.text = widget.formePharma;
   }
 
   void _confirmOCR() {
     final medication = _medicationController.text.trim();
-    final dosage = _dosageController.text.trim();
-    final duration = _durationController.text.trim();
+    final voieAdmin = _voieAdminController.text.trim();
+    final formePharma = _formePharmaController.text.trim();
 
-    // Rediriger avec les données ajustées
+    // Redirige avec les données ajustées
     context.go(
       '/doctor_add_prescription',
       extra: {
         'medication': medication,
-        'dosage': dosage,
-        'duration': duration,
+        'voieAdmin': voieAdmin,
+        'formePharma': formePharma,
       },
     );
   }
@@ -62,30 +63,37 @@ class _DoctorReviewOCRScreenState extends State<DoctorReviewOCRScreen> {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
+
+            // -- Champ : Nom du médicament
             TextField(
               controller: _medicationController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "Médicament",
+                labelText: "Nom du Médicament",
               ),
             ),
             const SizedBox(height: 10),
+
+            // -- Champ : Nom de la voie administrative
             TextField(
-              controller: _dosageController,
+              controller: _voieAdminController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "Dosage",
+                labelText: "Nom de la voie administrative",
               ),
             ),
             const SizedBox(height: 10),
+
+            // -- Champ : Nom de la forme pharmaceutique
             TextField(
-              controller: _durationController,
+              controller: _formePharmaController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "Durée",
+                labelText: "Nom de la forme pharmaceutique",
               ),
             ),
             const SizedBox(height: 20),
+
             ElevatedButton.icon(
               onPressed: _confirmOCR,
               icon: const Icon(Icons.check),
@@ -98,6 +106,7 @@ class _DoctorReviewOCRScreenState extends State<DoctorReviewOCRScreen> {
   }
 }
 
+// Si vous désirez un Drawer cohérent, voici un exemple minimal :
 Drawer _buildDoctorDrawer(BuildContext context, AuthProvider authProvider) {
   return Drawer(
     child: ListView(
@@ -112,6 +121,7 @@ Drawer _buildDoctorDrawer(BuildContext context, AuthProvider authProvider) {
           title: const Text('Ajouter une Prescription'),
           onTap: () => context.go('/doctor_add_prescription'),
         ),
+        // ... Autres items si besoin ...
       ],
     ),
   );

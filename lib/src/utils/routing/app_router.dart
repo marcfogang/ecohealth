@@ -60,8 +60,8 @@ final appRouter = GoRouter(
         final extra = state.extra as Map<String, dynamic>? ?? {};
         return DoctorAddPrescriptionScreen(
           medication: extra['medication'] ?? '',
-          dosage: extra['dosage'] ?? '',
-          duration: extra['duration'] ?? '',
+          voieAdmin: extra['voieAdmin'] ?? '',
+          formePharma: extra['formePharma'] ?? '',
         );
       },
     ),
@@ -88,8 +88,8 @@ final appRouter = GoRouter(
         return DoctorReviewOCRScreen(
           rawText: extra['rawText'] ?? '',
           medication: extra['medication'] ?? '',
-          dosage: extra['dosage'] ?? '',
-          duration: extra['duration'] ?? '',
+          voieAdmin: extra['voieAdmin'] ?? '',
+          formePharma: extra['formePharma'] ?? '',
         );
       },
     ),

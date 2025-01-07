@@ -18,6 +18,7 @@ import 'src/data/repositories/aidant_repository.dart';
 
 import 'src/data/services/appointment_service.dart';
 import 'src/data/repositories/appointment_repository.dart';
+import 'src/data/services/medication_api_service.dart'; // Notre nouveau service
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +53,7 @@ void main() async {
         Provider(create: (_) => prescriptionRepository),
         Provider(create: (_) => aidantRepository),
         Provider(create: (_) => appointmentRepository),
+        Provider(create: (_) => MedicationApiService())
       ],
       child: const MyApp(),
     ),
