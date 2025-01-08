@@ -35,6 +35,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
+
   // ✅ Ouvrir des boxes Hive pour stocker les données localement
   var userBox = await Hive.openBox('usersBox');
   var prescriptionBox = await Hive.openBox('prescriptionsBox');
@@ -82,6 +83,7 @@ void main() async {
   // Notifications
   final notificationService = NotificationService();
   await notificationService.initializeNotifications();
+  await notificationService.requestNotificationPermissions();
 
   // Notifications Repository
   final notificationsRepository = NotificationsRepository(

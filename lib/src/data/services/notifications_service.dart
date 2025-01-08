@@ -15,7 +15,7 @@ class NotificationService {
 
   NotificationService._internal();
 
-  /// ✅ **Initialisation pour iOS/Android**
+  /// ✅ **Initialisation des Notifications**
   Future<void> initializeNotifications() async {
     // Initialisation Android
     const AndroidInitializationSettings androidInitSettings =
@@ -37,14 +37,32 @@ class NotificationService {
       onDidReceiveNotificationResponse: _onNotificationResponse,
     );
 
-    // ✅ Initialisation de Timezone
+    // ✅ Initialisation du Fuseau Horaire
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Europe/Paris')); // Ajustez si nécessaire
   }
 
-  /// ✅ **Callback quand l'utilisateur clique sur une notification**
+  /// ✅ **Demander les permissions pour les notifications (iOS uniquement)**
+  Future<void> requestNotificationPermissions() async {
+    final bool? result = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (result == true) {
+      debugPrint("✅ Permissions Notifications accordées");
+    } else {
+      debugPrint("❌ Permissions Notifications refusées");
+    }
+  }
+
+  /// ✅ **Callback lors d'un clic sur une notification**
   void _onNotificationResponse(NotificationResponse response) {
-    debugPrint("Notification cliquée avec payload : ${response.payload}");
+    debugPrint("🛎️ Notification cliquée avec payload : ${response.payload}");
   }
 
   /// ✅ **Afficher une Notification Immédiate**
@@ -89,7 +107,7 @@ class NotificationService {
   }) async {
     final now = DateTime.now();
     if (scheduledDate.isBefore(now)) {
-      debugPrint("Date de notification déjà passée.");
+      debugPrint("⚠️ Date de notification déjà passée.");
       return;
     }
 
@@ -118,23 +136,26 @@ class NotificationService {
       uiLocalNotificationDateInterpretation:
       UILocalNotificationDateInterpretation.wallClockTime,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
+      matchDateTimeComponents: null,
       payload: payload,
     );
-  }
-
-  /// ✅ **Convertir DateTime en TZDateTime**
-  tz.TZDateTime _convertToTZ(DateTime dateTime) {
-    return tz.TZDateTime.from(dateTime, tz.local);
   }
 
   /// ✅ **Annuler une Notification**
   Future<void> cancelNotification(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);
+    debugPrint("🔕 Notification $id annulée");
   }
 
   /// ✅ **Annuler Toutes les Notifications**
   Future<void> cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
+    debugPrint("🔕 Toutes les notifications ont été annulées");
+  }
+
+  /// ✅ **Convertir DateTime en TZDateTime (Fuseau Horaire)**
+  tz.TZDateTime _convertToTZ(DateTime dateTime) {
+    return tz.TZDateTime.from(dateTime, tz.local);
   }
 }
+
