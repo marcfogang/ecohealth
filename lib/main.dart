@@ -26,6 +26,7 @@ import 'src/data/repositories/aidant_repository.dart';
 import 'src/data/repositories/appointment_repository.dart';
 import 'src/data/repositories/stock_repository.dart';
 import 'src/data/repositories/reminders_repository.dart';
+import 'src/data/repositories/notifications_repository.dart';
 
 // Providers
 import 'src/presentation/state/auth_provider.dart';
@@ -40,6 +41,7 @@ void main() async {
   var appointmentBox = await Hive.openBox('appointmentsBox');
   var aidantBox = await Hive.openBox('aidantsBox');
   var remindersBox = await Hive.openBox('remindersBox');
+  var notificationsBox = await Hive.openBox('notificationsBox'); // ✅ Ajout NotificationsBox
 
   // ✅ Initialisation du stockage Hive si nécessaire
   await LocalStorage.initHive();
@@ -81,6 +83,11 @@ void main() async {
   final notificationService = NotificationService();
   await notificationService.initializeNotifications();
 
+  // Notifications Repository
+  final notificationsRepository = NotificationsRepository(
+    notificationsBox: notificationsBox,
+  );
+
   // Reminders
   final remindersRepository = RemindersRepository(remindersBox: remindersBox);
 
@@ -97,6 +104,7 @@ void main() async {
         Provider(create: (_) => appointmentRepository),
         Provider(create: (_) => stockRepository),
         Provider(create: (_) => remindersRepository),
+        Provider(create: (_) => notificationsRepository), // ✅ Ajout NotificationsRepository
 
         // Services
         Provider(create: (_) => medicationApiService),

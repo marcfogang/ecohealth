@@ -25,6 +25,8 @@ import '../../presentation/screens/doctor/doctor_review_ocr_screen.dart';
 
 // Ecrans Aidant
 import '../../presentation/screens/aidant/aidant_home_screen.dart';
+import '../../presentation/screens/aidant/aidant_notifications_screen.dart';
+import '../../presentation/screens/aidant/aidant_patient_info_screen.dart';
 
 final appRouter = GoRouter(
   routes: [
@@ -128,6 +130,16 @@ final appRouter = GoRouter(
       path: '/aidant_home',
       name: 'aidant_home',
       builder: (context, state) => const AidantHomeScreen(),
+    ),
+    GoRoute(
+      path: '/aidant_patient_info',
+      name: 'aidant_patient_info',
+      builder: (context, state) => const AidantPatientInfoScreen(),
+    ),
+    GoRoute(
+      path: '/aidant_notifications',
+      name: 'aidant_notifications',
+      builder: (context, state) => const AidantNotificationsScreen(),
     ),
   ],
   initialLocation: '/',
